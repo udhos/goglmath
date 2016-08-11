@@ -9,14 +9,14 @@ type Matrix4 struct {
 	data []float32
 }
 
-func (m *Matrix4) malloc() {
+func (m *Matrix4) Malloc() {
 	if len(m.data) != 16 {
 		m.data = make([]float32, 16, 16)
 	}
 }
 
 func (m *Matrix4) copyFrom(src *Matrix4) {
-	m.malloc()
+	m.Malloc()
 	copy(m.data, src.data)
 }
 
@@ -63,7 +63,7 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 	}
 	invDet := 1.0 / det
 
-	m.malloc()
+	m.Malloc()
 
 	m.data[0] = (a11*b11 - a12*b10 + a13*b09) * invDet
 	m.data[1] = (-a01*b11 + a02*b10 - a03*b09) * invDet
@@ -210,13 +210,23 @@ func (m *Matrix4) multiply(n *Matrix4) {
 	m.data[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
 }
 
-func setNullMatrix(m *Matrix4) {
-	m.data = []float32{
-		0, 0, 0, 0, // c0
-		0, 0, 0, 0, // c1
-		0, 0, 0, 0, // c2
-		0, 0, 0, 0, // c3
-	}
+func SetNullMatrix(m *Matrix4) {
+	m.data[0] = 0
+	m.data[1] = 0
+	m.data[2] = 0
+	m.data[3] = 0
+	m.data[4] = 0
+	m.data[5] = 0
+	m.data[6] = 0
+	m.data[7] = 0
+	m.data[8] = 0
+	m.data[9] = 0
+	m.data[10] = 0
+	m.data[11] = 0
+	m.data[12] = 0
+	m.data[13] = 0
+	m.data[14] = 0
+	m.data[15] = 0
 }
 
 func setIdentityMatrix(m *Matrix4) {

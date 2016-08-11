@@ -12,3 +12,12 @@ func TestNormalize3(t *testing.T) {
 		t.Errorf("expected=%v got=%v", want, size)
 	}
 }
+
+func BenchmarkSetNullMatrix(b *testing.B) {
+	m := &Matrix4{}
+	m.Malloc()
+
+	for n := 0; n < b.N; n++ {
+		SetNullMatrix(m)
+	}
+}
