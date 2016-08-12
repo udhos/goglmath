@@ -6,17 +6,8 @@ import (
 )
 
 type Matrix4 struct {
-	//data []float32
 	data [16]float32
 }
-
-/*
-func (m *Matrix4) Malloc() {
-	if len(m.data) != 16 {
-		m.data = make([]float32, 16, 16)
-	}
-}
-*/
 
 var mat4identity = Matrix4{[16]float32{
 	1, 0, 0, 0,
@@ -33,12 +24,55 @@ func (m *Matrix4) Identity() bool {
 	return *m == mat4identity
 }
 
+func (m *Matrix4) Null() bool {
+	for f := range m.data {
+		if f != 0 {
+			return false
+		}
+	}
+	return true
+}
+
 func (m *Matrix4) copyFrom(src *Matrix4) {
-	/*
-		m.Malloc()
-		copy(m.data, src.data)
-	*/
 	m.data = src.data
+}
+
+func (m *Matrix4) SetNull() {
+	m.data[0] = 0
+	m.data[1] = 0
+	m.data[2] = 0
+	m.data[3] = 0
+	m.data[4] = 0
+	m.data[5] = 0
+	m.data[6] = 0
+	m.data[7] = 0
+	m.data[8] = 0
+	m.data[9] = 0
+	m.data[10] = 0
+	m.data[11] = 0
+	m.data[12] = 0
+	m.data[13] = 0
+	m.data[14] = 0
+	m.data[15] = 0
+}
+
+func (m *Matrix4) SetIdentity() {
+	m.data[0] = 1
+	m.data[1] = 0
+	m.data[2] = 0
+	m.data[3] = 0
+	m.data[4] = 0
+	m.data[5] = 1
+	m.data[6] = 0
+	m.data[7] = 0
+	m.data[8] = 0
+	m.data[9] = 0
+	m.data[10] = 1
+	m.data[11] = 0
+	m.data[12] = 0
+	m.data[13] = 0
+	m.data[14] = 0
+	m.data[15] = 1
 }
 
 func (m *Matrix4) invert() {
@@ -83,8 +117,6 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 		return errors.New("copyInverseFrom: null determinant")
 	}
 	invDet := 1.0 / det
-
-	//m.Malloc()
 
 	m.data[0] = (a11*b11 - a12*b10 + a13*b09) * invDet
 	m.data[1] = (-a01*b11 + a02*b10 - a03*b09) * invDet
@@ -229,44 +261,6 @@ func (m *Matrix4) multiply(n *Matrix4) {
 	m.data[7] = (m30 * n01) + (m31 * n11) + (m32 * n21) + (m33 * n31)
 	m.data[11] = (m30 * n02) + (m31 * n12) + (m32 * n22) + (m33 * n32)
 	m.data[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
-}
-
-func SetNullMatrix(m *Matrix4) {
-	m.data[0] = 0
-	m.data[1] = 0
-	m.data[2] = 0
-	m.data[3] = 0
-	m.data[4] = 0
-	m.data[5] = 0
-	m.data[6] = 0
-	m.data[7] = 0
-	m.data[8] = 0
-	m.data[9] = 0
-	m.data[10] = 0
-	m.data[11] = 0
-	m.data[12] = 0
-	m.data[13] = 0
-	m.data[14] = 0
-	m.data[15] = 0
-}
-
-func SetIdentityMatrix(m *Matrix4) {
-	m.data[0] = 1
-	m.data[1] = 0
-	m.data[2] = 0
-	m.data[3] = 0
-	m.data[4] = 0
-	m.data[5] = 1
-	m.data[6] = 0
-	m.data[7] = 0
-	m.data[8] = 0
-	m.data[9] = 0
-	m.data[10] = 1
-	m.data[11] = 0
-	m.data[12] = 0
-	m.data[13] = 0
-	m.data[14] = 0
-	m.data[15] = 1
 }
 
 func distanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
