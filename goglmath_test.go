@@ -28,6 +28,42 @@ func TestCopy(t *testing.T) {
 }
 
 func TestIdentity1(t *testing.T) {
+	m1 := &Matrix4{[16]float32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}}
+	if !isIdentityMatrix(m1) {
+		t.Errorf("not identity matrix")
+	}
+}
+
+func TestIdentity2(t *testing.T) {
+	m1 := &Matrix4{[16]float32{
+		1, 0, 0, 1,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}}
+	if isIdentityMatrix(m1) {
+		t.Errorf("wrong identity matrix")
+	}
+}
+
+func TestIdentity3(t *testing.T) {
+	m1 := &Matrix4{[16]float32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 1,
+	}}
+	if isIdentityMatrix(m1) {
+		t.Errorf("wrong identity matrix")
+	}
+}
+
+func TestIdentity4(t *testing.T) {
 	m1 := &Matrix4{}
 	SetIdentityMatrix(m1)
 	if !isIdentityMatrix(m1) {
@@ -35,7 +71,7 @@ func TestIdentity1(t *testing.T) {
 	}
 }
 
-func TestIdentity2(t *testing.T) {
+func TestIdentity5(t *testing.T) {
 	m1 := NewMatrix4Identity()
 	if !isIdentityMatrix(m1) {
 		t.Errorf("not identity matrix")

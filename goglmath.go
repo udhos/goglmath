@@ -265,15 +265,8 @@ func SetIdentityMatrix(m *Matrix4) {
 
 func isIdentityMatrix(m *Matrix4) bool {
 	for i := 0; i < 16; i++ {
-		diag := i%5 == 0
-		if diag {
-			if m.data[i] != 1 {
-				return false
-			}
-		} else {
-			if m.data[i] != 0 {
-				return false
-			}
+		if (i%5 == 0) != (m.data[i] == 1) {
+			return false
 		}
 	}
 	return true
