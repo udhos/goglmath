@@ -306,6 +306,7 @@ func setRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, up
 
 /*
 	setModelMatrix builds the model matrix.
+	Model transformation represents objection location/orientation in world space.
 	Model transformation is also known as "camera" transformation.
 	Model transformation is the inverse of the view transformation.
 	Common use is to compute object location/orientation into full transformation matrix.
@@ -373,6 +374,8 @@ func setModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 
 /*
 	setViewMatrix builds the view matrix.
+	View transformation represents camera inverted location/orientation in world space.
+	View transformation moves all world objects in order to simulate a camera.
 	View transformation is also known as "lookAt" transformation.
 	View transformation is the inverse of the model transformation.
 	Common use is to compute camera location/orientation into full transformation matrix.
