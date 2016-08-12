@@ -6,18 +6,24 @@ import (
 )
 
 type Matrix4 struct {
-	data []float32
+	//data []float32
+	data [16]float32
 }
 
+/*
 func (m *Matrix4) Malloc() {
 	if len(m.data) != 16 {
 		m.data = make([]float32, 16, 16)
 	}
 }
+*/
 
 func (m *Matrix4) copyFrom(src *Matrix4) {
-	m.Malloc()
-	copy(m.data, src.data)
+	/*
+		m.Malloc()
+		copy(m.data, src.data)
+	*/
+	m.data = src.data
 }
 
 func (m *Matrix4) invert() {
@@ -63,7 +69,7 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 	}
 	invDet := 1.0 / det
 
-	m.Malloc()
+	//m.Malloc()
 
 	m.data[0] = (a11*b11 - a12*b10 + a13*b09) * invDet
 	m.data[1] = (-a01*b11 + a02*b10 - a03*b09) * invDet
@@ -230,12 +236,22 @@ func SetNullMatrix(m *Matrix4) {
 }
 
 func setIdentityMatrix(m *Matrix4) {
-	m.data = []float32{
-		1, 0, 0, 0, // c0
-		0, 1, 0, 0, // c1
-		0, 0, 1, 0, // c2
-		0, 0, 0, 1, // c3
-	}
+	m.data[0] = 1
+	m.data[1] = 0
+	m.data[2] = 0
+	m.data[3] = 0
+	m.data[4] = 1
+	m.data[5] = 0
+	m.data[6] = 0
+	m.data[7] = 0
+	m.data[8] = 1
+	m.data[9] = 0
+	m.data[10] = 0
+	m.data[11] = 0
+	m.data[12] = 1
+	m.data[13] = 0
+	m.data[14] = 0
+	m.data[15] = 0
 }
 
 func distanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
@@ -329,12 +345,30 @@ func setModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 	oY := float32(tY)
 	oZ := float32(tZ)
 
-	modelMatrix.data = []float32{
-		rX, rY, rZ, 0, // c0
-		uX, uY, uZ, 0, // c1
-		bX, bY, bZ, 0, // c2
-		oX, oY, oZ, 1, // c3
-	}
+	/*
+		modelMatrix.data = []float32{
+			rX, rY, rZ, 0, // c0
+			uX, uY, uZ, 0, // c1
+			bX, bY, bZ, 0, // c2
+			oX, oY, oZ, 1, // c3
+		}
+	*/
+	modelMatrix.data[0] = rX
+	modelMatrix.data[1] = rY
+	modelMatrix.data[2] = rZ
+	modelMatrix.data[3] = 0
+	modelMatrix.data[4] = uX
+	modelMatrix.data[5] = uY
+	modelMatrix.data[6] = uZ
+	modelMatrix.data[7] = 0
+	modelMatrix.data[8] = bX
+	modelMatrix.data[9] = bY
+	modelMatrix.data[10] = bZ
+	modelMatrix.data[11] = 0
+	modelMatrix.data[12] = oX
+	modelMatrix.data[13] = oY
+	modelMatrix.data[14] = oZ
+	modelMatrix.data[15] = 1
 }
 
 /*
@@ -384,12 +418,30 @@ func setViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, p
 	eY := float32(rotatedEyeY)
 	eZ := float32(rotatedEyeZ)
 
-	viewMatrix.data = []float32{
-		rX, uX, bX, 0, // c0
-		rY, uY, bY, 0, // c1
-		rZ, uZ, bZ, 0, // c2
-		eX, eY, eZ, 1, // c3
-	}
+	/*
+		viewMatrix.data = []float32{
+			rX, uX, bX, 0, // c0
+			rY, uY, bY, 0, // c1
+			rZ, uZ, bZ, 0, // c2
+			eX, eY, eZ, 1, // c3
+		}
+	*/
+	viewMatrix.data[0] = rX
+	viewMatrix.data[1] = uX
+	viewMatrix.data[2] = bX
+	viewMatrix.data[3] = 0
+	viewMatrix.data[4] = rY
+	viewMatrix.data[5] = uY
+	viewMatrix.data[6] = bY
+	viewMatrix.data[7] = 0
+	viewMatrix.data[8] = rZ
+	viewMatrix.data[9] = uZ
+	viewMatrix.data[10] = bZ
+	viewMatrix.data[11] = 0
+	viewMatrix.data[12] = eX
+	viewMatrix.data[13] = eY
+	viewMatrix.data[14] = eZ
+	viewMatrix.data[15] = 1
 }
 
 func setPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspectRatio, zNear, zFar float64) {
@@ -401,12 +453,30 @@ func setPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspec
 	d10 := float32((zNear + zFar) * rangeInv)
 	d14 := float32(zNear * zFar * rangeInv * 2.0)
 
-	perspectiveMatrix.data = []float32{
-		d0, 0, 0, 0,
-		0, d5, 0, 0,
-		0, 0, d10, -1,
-		0, 0, d14, 0,
-	}
+	/*
+		perspectiveMatrix.data = []float32{
+			d0, 0, 0, 0,
+			0, d5, 0, 0,
+			0, 0, d10, -1,
+			0, 0, d14, 0,
+		}
+	*/
+	perspectiveMatrix.data[0] = d0
+	perspectiveMatrix.data[1] = 0
+	perspectiveMatrix.data[2] = 0
+	perspectiveMatrix.data[3] = 0
+	perspectiveMatrix.data[4] = 0
+	perspectiveMatrix.data[5] = d5
+	perspectiveMatrix.data[6] = 0
+	perspectiveMatrix.data[7] = 0
+	perspectiveMatrix.data[8] = 0
+	perspectiveMatrix.data[9] = 0
+	perspectiveMatrix.data[10] = d10
+	perspectiveMatrix.data[11] = -1
+	perspectiveMatrix.data[12] = 0
+	perspectiveMatrix.data[13] = 0
+	perspectiveMatrix.data[14] = d14
+	perspectiveMatrix.data[15] = 0
 }
 
 /*

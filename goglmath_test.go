@@ -15,9 +15,15 @@ func TestNormalize3(t *testing.T) {
 
 func BenchmarkSetNullMatrix(b *testing.B) {
 	m := &Matrix4{}
-	m.Malloc()
+	//m.Malloc()
 
 	for n := 0; n < b.N; n++ {
 		SetNullMatrix(m)
+	}
+}
+
+func BenchmarkLengthSquared3(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		lengthSquared3(1, 2, 3)
 	}
 }
