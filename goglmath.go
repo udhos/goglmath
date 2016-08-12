@@ -18,6 +18,15 @@ func (m *Matrix4) Malloc() {
 }
 */
 
+func NewMatrix4Identity() *Matrix4 {
+	return &Matrix4{[16]float32{
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1,
+	}}
+}
+
 func (m *Matrix4) copyFrom(src *Matrix4) {
 	/*
 		m.Malloc()
@@ -235,23 +244,39 @@ func SetNullMatrix(m *Matrix4) {
 	m.data[15] = 0
 }
 
-func setIdentityMatrix(m *Matrix4) {
+func SetIdentityMatrix(m *Matrix4) {
 	m.data[0] = 1
 	m.data[1] = 0
 	m.data[2] = 0
 	m.data[3] = 0
-	m.data[4] = 1
-	m.data[5] = 0
+	m.data[4] = 0
+	m.data[5] = 1
 	m.data[6] = 0
 	m.data[7] = 0
-	m.data[8] = 1
+	m.data[8] = 0
 	m.data[9] = 0
-	m.data[10] = 0
+	m.data[10] = 1
 	m.data[11] = 0
-	m.data[12] = 1
+	m.data[12] = 0
 	m.data[13] = 0
 	m.data[14] = 0
-	m.data[15] = 0
+	m.data[15] = 1
+}
+
+func isIdentityMatrix(m *Matrix4) bool {
+	for i := 0; i < 16; i++ {
+		diag := i%5 == 0
+		if diag {
+			if m.data[i] != 1 {
+				return false
+			}
+		} else {
+			if m.data[i] != 0 {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func distanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {

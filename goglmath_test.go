@@ -27,6 +27,21 @@ func TestCopy(t *testing.T) {
 	}
 }
 
+func TestIdentity1(t *testing.T) {
+	m1 := &Matrix4{}
+	SetIdentityMatrix(m1)
+	if !isIdentityMatrix(m1) {
+		t.Errorf("not identity matrix")
+	}
+}
+
+func TestIdentity2(t *testing.T) {
+	m1 := NewMatrix4Identity()
+	if !isIdentityMatrix(m1) {
+		t.Errorf("not identity matrix")
+	}
+}
+
 func BenchmarkSetNullMatrix(b *testing.B) {
 	m := &Matrix4{}
 	//m.Malloc()
