@@ -34,7 +34,7 @@ func TestIdentity1(t *testing.T) {
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	}}
-	if !isIdentityMatrix(m1) {
+	if !m1.Identity() {
 		t.Errorf("not identity matrix")
 	}
 }
@@ -46,7 +46,7 @@ func TestIdentity2(t *testing.T) {
 		0, 0, 1, 0,
 		0, 0, 0, 1,
 	}}
-	if isIdentityMatrix(m1) {
+	if m1.Identity() {
 		t.Errorf("wrong identity matrix")
 	}
 }
@@ -58,7 +58,7 @@ func TestIdentity3(t *testing.T) {
 		0, 0, 0, 0,
 		0, 0, 0, 1,
 	}}
-	if isIdentityMatrix(m1) {
+	if m1.Identity() {
 		t.Errorf("wrong identity matrix")
 	}
 }
@@ -66,14 +66,14 @@ func TestIdentity3(t *testing.T) {
 func TestIdentity4(t *testing.T) {
 	m1 := &Matrix4{}
 	SetIdentityMatrix(m1)
-	if !isIdentityMatrix(m1) {
+	if !m1.Identity() {
 		t.Errorf("not identity matrix")
 	}
 }
 
 func TestIdentity5(t *testing.T) {
 	m1 := NewMatrix4Identity()
-	if !isIdentityMatrix(m1) {
+	if !m1.Identity() {
 		t.Errorf("not identity matrix")
 	}
 }
@@ -90,5 +90,12 @@ func BenchmarkSetNullMatrix(b *testing.B) {
 func BenchmarkLengthSquared3(b *testing.B) {
 	for n := 0; n < b.N; n++ {
 		lengthSquared3(1, 2, 3)
+	}
+}
+
+func BenchmarkIdentity(b *testing.B) {
+	m1 := mat4identity // dangerous -- do not use outside package
+	for n := 0; n < b.N; n++ {
+		m1.Identity()
 	}
 }

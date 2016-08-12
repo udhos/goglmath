@@ -18,13 +18,19 @@ func (m *Matrix4) Malloc() {
 }
 */
 
-func NewMatrix4Identity() *Matrix4 {
-	return &Matrix4{[16]float32{
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1,
-	}}
+var mat4identity = Matrix4{[16]float32{
+	1, 0, 0, 0,
+	0, 1, 0, 0,
+	0, 0, 1, 0,
+	0, 0, 0, 1,
+}}
+
+func NewMatrix4Identity() Matrix4 {
+	return mat4identity // clone -- it's unsafe to return pointer to the original data
+}
+
+func (m *Matrix4) Identity() bool {
+	return *m == mat4identity
 }
 
 func (m *Matrix4) copyFrom(src *Matrix4) {
@@ -261,15 +267,6 @@ func SetIdentityMatrix(m *Matrix4) {
 	m.data[13] = 0
 	m.data[14] = 0
 	m.data[15] = 1
-}
-
-func isIdentityMatrix(m *Matrix4) bool {
-	for i := 0; i < 16; i++ {
-		if (i%5 == 0) != (m.data[i] == 1) {
-			return false
-		}
-	}
-	return true
 }
 
 func distanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
