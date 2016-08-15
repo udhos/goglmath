@@ -7,6 +7,7 @@ import (
 
 type Matrix4 struct {
 	data [16]float32
+	slice []float32 // slice cache
 }
 
 var mat4identity = Matrix4{[16]float32{
@@ -14,17 +15,35 @@ var mat4identity = Matrix4{[16]float32{
 	0, 1, 0, 0,
 	0, 0, 1, 0,
 	0, 0, 0, 1,
-}}
+},
+nil,
+}
 
 func NewMatrix4Identity() Matrix4 {
 	return mat4identity // clone -- it's unsafe to return pointer to the original data
 }
 
+func (m *Matrix4) clearCache() {
+	m.slice = nil
+}
+
+func (m *Matrix4) Data() []float32 {
+	if m.slice == nil {
+		m.slice = m.data[:] // slice once on first usage
+	}
+	return m.slice
+}
+
+func (m *Matrix4) Data2() []float32 {
+	return m.data[:] // slice every time
+}
+
 func (m *Matrix4) Identity() bool {
-	return *m == mat4identity
+	return m.data == mat4identity.data
 }
 
 func (m *Matrix4) Null() bool {
+	m.clearCache()
 	for f := range m.data {
 		if f != 0 {
 			return false
@@ -33,11 +52,13 @@ func (m *Matrix4) Null() bool {
 	return true
 }
 
-func (m *Matrix4) copyFrom(src *Matrix4) {
+func (m *Matrix4) CopyFrom(src *Matrix4) {
+	m.clearCache()
 	m.data = src.data
 }
 
 func (m *Matrix4) SetNull() {
+	m.clearCache()
 	m.data[0] = 0
 	m.data[1] = 0
 	m.data[2] = 0
@@ -57,6 +78,7 @@ func (m *Matrix4) SetNull() {
 }
 
 func (m *Matrix4) SetIdentity() {
+	m.clearCache()
 	m.data[0] = 1
 	m.data[1] = 0
 	m.data[2] = 0
@@ -80,6 +102,8 @@ func (m *Matrix4) invert() {
 }
 
 func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
+
+	m.clearCache()
 
 	a00 := src.data[0]
 	a01 := src.data[1]
@@ -113,7 +137,7 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 
 	det := b00*b11 - b01*b10 + b02*b09 + b03*b08 - b04*b07 + b05*b06
 	if det == 0.0 {
-		m.copyFrom(src)
+		m.CopyFrom(src)
 		return errors.New("copyInverseFrom: null determinant")
 	}
 	invDet := 1.0 / det
@@ -139,8 +163,10 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 }
 
 // transform: multiply this matrix [m] by vector [x,y,z,w]
-func (m *Matrix4) transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
+func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 
+	m.clearCache()
+	
 	m0 := float64(m.data[0])
 	m1 := float64(m.data[1])
 	m2 := float64(m.data[2])
@@ -167,7 +193,9 @@ func (m *Matrix4) transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 }
 
 // usually set w to 1.0
-func (m *Matrix4) translate(tx, ty, tz, tw float64) {
+func (m *Matrix4) Translate(tx, ty, tz, tw float64) {
+	m.clearCache()
+	
 	x := float32(tx)
 	y := float32(ty)
 	z := float32(tz)
@@ -183,7 +211,9 @@ func (m *Matrix4) translate(tx, ty, tz, tw float64) {
 }
 
 // usually set w to 1.0
-func (m *Matrix4) scale(x, y, z, w float64) {
+func (m *Matrix4) Scale(x, y, z, w float64) {
+	m.clearCache()
+	
 	x1 := float32(x)
 	y1 := float32(y)
 	z1 := float32(z)
@@ -210,7 +240,9 @@ func (m *Matrix4) scale(x, y, z, w float64) {
 	m.data[15] *= w1
 }
 
-func (m *Matrix4) multiply(n *Matrix4) {
+func (m *Matrix4) Multiply(n *Matrix4) {
+	m.clearCache()
+	
 	m00 := m.data[0]
 	m01 := m.data[4]
 	m02 := m.data[8]
@@ -263,36 +295,36 @@ func (m *Matrix4) multiply(n *Matrix4) {
 	m.data[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
 }
 
-func distanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
-	return lengthSquared3(x2-x1, y2-y1, z2-z1)
+func DistanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
+	return LengthSquared3(x2-x1, y2-y1, z2-z1)
 }
 
-func distance3(x1, y1, z1, x2, y2, z2 float64) float64 {
+func Distance3(x1, y1, z1, x2, y2, z2 float64) float64 {
 	return Length3(x2-x1, y2-y1, z2-z1)
 }
 
-func ortho3(x1, y1, z1, x2, y2, z2 float64) bool {
-	return closeToZero(dot3(x1, y1, z1, x2, y2, z2))
+func Ortho3(x1, y1, z1, x2, y2, z2 float64) bool {
+	return closeToZero(Dot3(x1, y1, z1, x2, y2, z2))
 }
 
 func closeToZero(f float64) bool {
 	return math.Abs(f-0.0) < 0.000001
 }
 
-func cross3(x1, y1, z1, x2, y2, z2 float64) (float64, float64, float64) {
+func Cross3(x1, y1, z1, x2, y2, z2 float64) (float64, float64, float64) {
 	return y1*z2 - z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2
 }
 
-func dot3(x1, y1, z1, x2, y2, z2 float64) float64 {
+func Dot3(x1, y1, z1, x2, y2, z2 float64) float64 {
 	return x1*x2 + y1*y2 + z1*z2
 }
 
-func lengthSquared3(x, y, z float64) float64 {
+func LengthSquared3(x, y, z float64) float64 {
 	return x*x + y*y + z*z // dot3(x,y,z,x,y,z)
 }
 
 func Length3(x, y, z float64) float64 {
-	return math.Sqrt(lengthSquared3(x, y, z))
+	return math.Sqrt(LengthSquared3(x, y, z))
 }
 
 func Normalize3(x, y, z float64) (float64, float64, float64) {
@@ -309,8 +341,8 @@ func Normalize3(x, y, z float64) (float64, float64, float64) {
 	up = 0 1 0       // up direction is +Y
 	setRotationMatrix(&rotation, 0, 0, -1, 0, 1, 0)
 */
-func setRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
-	setModelMatrix(rotationMatrix, forwardX, forwardY, forwardZ, upX, upY, upZ, 0, 0, 0)
+func SetRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
+	SetModelMatrix(rotationMatrix, forwardX, forwardY, forwardZ, upX, upY, upZ, 0, 0, 0)
 }
 
 /*
@@ -336,8 +368,11 @@ func setRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, up
 	translation = 0 0 0 // position at origin
 	setModelMatrix(&rotation, 0, 0, -1, 0, 1, 0, 0, 0, 0)
 */
-func setModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ, tX, tY, tZ float64) {
-	rightX, rightY, rightZ := Normalize3(cross3(forwardX, forwardY, forwardZ, upX, upY, upZ))
+func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ, tX, tY, tZ float64) {
+
+	modelMatrix.clearCache()
+	
+	rightX, rightY, rightZ := Normalize3(Cross3(forwardX, forwardY, forwardZ, upX, upY, upZ))
 
 	rX := float32(rightX)
 	rY := float32(rightY)
@@ -405,14 +440,17 @@ func setModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 	pos   = 0 0 0
 	setViewMatrix(&V, 0, 0, -1, 0, 1, 0, 0, 0, 0)
 */
-func setViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, posX, posY, posZ float64) {
-	backX, backY, backZ := Normalize3(posX-focusX, posY-focusY, posZ-focusZ)
-	rightX, rightY, rightZ := Normalize3(cross3(upX, upY, upZ, backX, backY, backZ))
-	newUpX, newUpY, newUpZ := Normalize3(cross3(backX, backY, backZ, rightX, rightY, rightZ))
+func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, posX, posY, posZ float64) {
 
-	rotatedEyeX := -dot3(rightX, rightY, rightZ, posX, posY, posZ)
-	rotatedEyeY := -dot3(newUpX, newUpY, newUpZ, posX, posY, posZ)
-	rotatedEyeZ := -dot3(backX, backY, backZ, posX, posY, posZ)
+	viewMatrix.clearCache()
+	
+	backX, backY, backZ := Normalize3(posX-focusX, posY-focusY, posZ-focusZ)
+	rightX, rightY, rightZ := Normalize3(Cross3(upX, upY, upZ, backX, backY, backZ))
+	newUpX, newUpY, newUpZ := Normalize3(Cross3(backX, backY, backZ, rightX, rightY, rightZ))
+
+	rotatedEyeX := -Dot3(rightX, rightY, rightZ, posX, posY, posZ)
+	rotatedEyeY := -Dot3(newUpX, newUpY, newUpZ, posX, posY, posZ)
+	rotatedEyeZ := -Dot3(backX, backY, backZ, posX, posY, posZ)
 
 	rX := float32(rightX)
 	rY := float32(rightY)
@@ -456,7 +494,10 @@ func setViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, p
 	viewMatrix.data[15] = 1
 }
 
-func setPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspectRatio, zNear, zFar float64) {
+func SetPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspectRatio, zNear, zFar float64) {
+
+	perspectiveMatrix.clearCache()
+	
 	f := math.Tan(math.Pi*0.5 - fieldOfViewYRadians*0.5) // = cotan(fieldOfViewYRadians/2)
 	rangeInv := 1.0 / (zNear - zFar)
 
@@ -519,7 +560,7 @@ func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHei
 	// invertedCamera: clip coord -> undo perspective -> undo view -> world coord
 	var invertedCamera Matrix4
 	invertedCamera.copyInverseFrom(camera)
-	vx, vy, vz, vw := invertedCamera.transform(pX, pY, pZ, 1.0)
+	vx, vy, vz, vw := invertedCamera.Transform(pX, pY, pZ, 1.0)
 	if vw == 0.0 {
 		err = errors.New("unproject: unprojected pick point with W=0")
 		return
@@ -545,7 +586,7 @@ func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHei
 	U = Undo Model Local Rotation
 	S = Scaling
 */
-func pickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeight, pickX, pickY int) (nearX, nearY, nearZ, farX, farY, farZ float64, err error) {
+func PickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeight, pickX, pickY int) (nearX, nearY, nearZ, farX, farY, farZ float64, err error) {
 
 	nearX, nearY, nearZ, err = unproject(camera, viewportX, viewportWidth, viewportY, viewportHeight, pickX, viewportHeight-pickY, 0.0)
 	if err != nil {
@@ -562,7 +603,7 @@ func pickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeigh
 	viewportX, viewportWidth, viewportY, viewportHeight: viewport
 	depthNear, depthFar: depthRange
 */
-func viewportTransform(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
+func ViewportTransform(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
 	halfWidth := float64(viewportWidth) / 2.0
 	halfHeight := float64(viewportHeight) / 2.0
 	vx := roundToInt(ndcX*halfWidth+halfWidth) + viewportX

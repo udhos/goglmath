@@ -78,6 +78,20 @@ func TestIdentity5(t *testing.T) {
 	}
 }
 
+func BenchmarkData(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.Data()
+	}
+}
+
+func BenchmarkData2(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.Data2()
+	}
+}
+
 func BenchmarkSetNullMatrix(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {
