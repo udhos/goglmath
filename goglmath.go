@@ -6,8 +6,7 @@ import (
 )
 
 type Matrix4 struct {
-	data [16]float32
-	slice []float32 // slice cache
+	data  [16]float32
 }
 
 var mat4identity = Matrix4{[16]float32{
@@ -15,27 +14,14 @@ var mat4identity = Matrix4{[16]float32{
 	0, 1, 0, 0,
 	0, 0, 1, 0,
 	0, 0, 0, 1,
-},
-nil,
-}
+}}
 
 func NewMatrix4Identity() Matrix4 {
 	return mat4identity // clone -- it's unsafe to return pointer to the original data
 }
 
-func (m *Matrix4) clearCache() {
-	m.slice = nil
-}
-
 func (m *Matrix4) Data() []float32 {
-	if m.slice == nil {
-		m.slice = m.data[:] // slice once on first usage
-	}
-	return m.slice
-}
-
-func (m *Matrix4) Data2() []float32 {
-	return m.data[:] // slice every time
+	return m.data[:] // slice every time -- this is faster than it seems :)
 }
 
 func (m *Matrix4) Identity() bool {
@@ -43,7 +29,6 @@ func (m *Matrix4) Identity() bool {
 }
 
 func (m *Matrix4) Null() bool {
-	m.clearCache()
 	for f := range m.data {
 		if f != 0 {
 			return false
@@ -53,12 +38,10 @@ func (m *Matrix4) Null() bool {
 }
 
 func (m *Matrix4) CopyFrom(src *Matrix4) {
-	m.clearCache()
 	m.data = src.data
 }
 
 func (m *Matrix4) SetNull() {
-	m.clearCache()
 	m.data[0] = 0
 	m.data[1] = 0
 	m.data[2] = 0
@@ -78,7 +61,6 @@ func (m *Matrix4) SetNull() {
 }
 
 func (m *Matrix4) SetIdentity() {
-	m.clearCache()
 	m.data[0] = 1
 	m.data[1] = 0
 	m.data[2] = 0
@@ -102,9 +84,6 @@ func (m *Matrix4) invert() {
 }
 
 func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
-
-	m.clearCache()
-
 	a00 := src.data[0]
 	a01 := src.data[1]
 	a02 := src.data[2]
@@ -164,9 +143,6 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 
 // transform: multiply this matrix [m] by vector [x,y,z,w]
 func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
-
-	m.clearCache()
-	
 	m0 := float64(m.data[0])
 	m1 := float64(m.data[1])
 	m2 := float64(m.data[2])
@@ -194,8 +170,6 @@ func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 
 // usually set w to 1.0
 func (m *Matrix4) Translate(tx, ty, tz, tw float64) {
-	m.clearCache()
-	
 	x := float32(tx)
 	y := float32(ty)
 	z := float32(tz)
@@ -212,8 +186,6 @@ func (m *Matrix4) Translate(tx, ty, tz, tw float64) {
 
 // usually set w to 1.0
 func (m *Matrix4) Scale(x, y, z, w float64) {
-	m.clearCache()
-	
 	x1 := float32(x)
 	y1 := float32(y)
 	z1 := float32(z)
@@ -241,8 +213,6 @@ func (m *Matrix4) Scale(x, y, z, w float64) {
 }
 
 func (m *Matrix4) Multiply(n *Matrix4) {
-	m.clearCache()
-	
 	m00 := m.data[0]
 	m01 := m.data[4]
 	m02 := m.data[8]
@@ -369,9 +339,6 @@ func SetRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, up
 	setModelMatrix(&rotation, 0, 0, -1, 0, 1, 0, 0, 0, 0)
 */
 func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ, tX, tY, tZ float64) {
-
-	modelMatrix.clearCache()
-	
 	rightX, rightY, rightZ := Normalize3(Cross3(forwardX, forwardY, forwardZ, upX, upY, upZ))
 
 	rX := float32(rightX)
@@ -442,8 +409,6 @@ func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 */
 func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, posX, posY, posZ float64) {
 
-	viewMatrix.clearCache()
-	
 	backX, backY, backZ := Normalize3(posX-focusX, posY-focusY, posZ-focusZ)
 	rightX, rightY, rightZ := Normalize3(Cross3(upX, upY, upZ, backX, backY, backZ))
 	newUpX, newUpY, newUpZ := Normalize3(Cross3(backX, backY, backZ, rightX, rightY, rightZ))
@@ -496,8 +461,6 @@ func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, p
 
 func SetPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspectRatio, zNear, zFar float64) {
 
-	perspectiveMatrix.clearCache()
-	
 	f := math.Tan(math.Pi*0.5 - fieldOfViewYRadians*0.5) // = cotan(fieldOfViewYRadians/2)
 	rangeInv := 1.0 / (zNear - zFar)
 

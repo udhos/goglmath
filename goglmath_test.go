@@ -19,7 +19,7 @@ func TestCopy(t *testing.T) {
 	for i := 0; i < 16; i++ {
 		m1.data[i] = float32(i)
 	}
-	m2.copyFrom(m1)
+	m2.CopyFrom(m1)
 	for i := 0; i < 16; i++ {
 		if m1.data[i] != m2.data[i] {
 			t.Errorf("matrix copy fail: position %d: expected=%v got=%v", i, m1.data[i], m2.data[i])
@@ -85,13 +85,6 @@ func BenchmarkData(b *testing.B) {
 	}
 }
 
-func BenchmarkData2(b *testing.B) {
-	m := &Matrix4{}
-	for n := 0; n < b.N; n++ {
-		m.Data2()
-	}
-}
-
 func BenchmarkSetNullMatrix(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {
@@ -108,7 +101,7 @@ func BenchmarkSetIdentityMatrix(b *testing.B) {
 
 func BenchmarkLengthSquared3(b *testing.B) {
 	for n := 0; n < b.N; n++ {
-		lengthSquared3(1, 2, 3)
+		LengthSquared3(1, 2, 3)
 	}
 }
 
