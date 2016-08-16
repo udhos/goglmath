@@ -81,7 +81,8 @@ func TestIdentity5(t *testing.T) {
 func BenchmarkData(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {
-		m.Data()
+		d := m.Data()
+		d[0]++
 	}
 }
 

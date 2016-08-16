@@ -6,7 +6,7 @@ import (
 )
 
 type Matrix4 struct {
-	data  [16]float32
+	data [16]float32
 }
 
 var mat4identity = Matrix4{[16]float32{
@@ -21,7 +21,7 @@ func NewMatrix4Identity() Matrix4 {
 }
 
 func (m *Matrix4) Data() []float32 {
-	return m.data[:] // slice every time -- this is faster than it seems :)
+	return m.data[:]
 }
 
 func (m *Matrix4) Identity() bool {
