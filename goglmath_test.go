@@ -78,6 +78,43 @@ func TestIdentity5(t *testing.T) {
 	}
 }
 
+func TestNull1(t *testing.T) {
+	m1 := &Matrix4{}
+	if !m1.Null() {
+		t.Errorf("null matrix reported as non-null: %v", m1)
+	}
+}
+
+func TestNull2(t *testing.T) {
+	m1 := &Matrix4{[16]float32{
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 0,
+		0, 0, 0, 1,
+	}}
+	if m1.Null() {
+		t.Errorf("non-null matrix reported as null")
+	}
+}
+
+func TestNull3(t *testing.T) {
+	m1 := &Matrix4{}
+	m1.SetIdentity()
+	if !m1.Identity() {
+		t.Errorf("identity matrix reported as non-identity")
+	}
+	if m1.Null() {
+		t.Errorf("identity matrix reported as null")
+	}
+	m1.SetNull()
+	if m1.Identity() {
+		t.Errorf("null matrix reported as identity")
+	}
+	if !m1.Null() {
+		t.Errorf("null matrix reported as non-null: %v", m1)
+	}
+}
+
 func BenchmarkData(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {

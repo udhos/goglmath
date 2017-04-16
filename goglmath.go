@@ -29,7 +29,7 @@ func (m *Matrix4) Identity() bool {
 }
 
 func (m *Matrix4) Null() bool {
-	for f := range m.data {
+	for _, f := range m.data {
 		if f != 0 {
 			return false
 		}
