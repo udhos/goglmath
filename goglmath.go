@@ -564,8 +564,9 @@ func PickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeigh
 
 /*
 	viewportTransform: map NDC coordinates to viewport coordinates
-	viewportX, viewportWidth, viewportY, viewportHeight: viewport
-	depthNear, depthFar: depthRange
+	Input: viewport (viewportX, viewportWidth, viewportY, viewportHeight)
+	Input: depthRange (depthNear, depthFar)
+	Output: x,y,depth (x,y = viewport coord)
 */
 func ViewportTransform(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
 	halfWidth := float64(viewportWidth) / 2.0
