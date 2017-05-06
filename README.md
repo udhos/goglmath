@@ -7,7 +7,7 @@ Full Transformation Stack
     obj.coord. -> P*V*T*R*U*S*o -> clip coord  -> divide by w -> NDC coord -> viewport transform      -> win.coord+depth
                     ---------      -----------                   ---------    -----------------------    ---------------
                     "MV"           gl_Position                   vec3         Viewport()+DepthRange()    x,y,depth
-		                   vec4
+                                   vec4
 
     o           = obj.coord
     P*V*T*R*U*S = full transformation matrix
