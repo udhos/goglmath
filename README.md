@@ -4,9 +4,10 @@ goglmath - Lightweight pure Go 3D math package providing essential matrix/vector
 Full Transformation Stack
 =========================
 
-    obj.coord. -> P*V*T*R*U*S*o -> clip coord  -> divide by w -> NDC coord -> viewport transform      -> window coord
-                    ---------      -----------                                -----------------------
-                    "MV"           gl_Position                                Viewport()+DepthRange()
+    obj.coord. -> P*V*T*R*U*S*o -> clip coord  -> divide by w -> NDC coord -> viewport transform      -> win.coord+depth
+                    ---------      -----------                   ---------    -----------------------    ---------------
+                    "MV"           gl_Position                   vec3         Viewport()+DepthRange()    x,y,depth
+		                   vec4
 
     o           = obj.coord
     P*V*T*R*U*S = full transformation matrix
@@ -24,6 +25,9 @@ Full Transformation Stack
     u_P         = P
     gl_Position = clip coord
 
-    Viewport transform is programmed with: Viewport()+DepthRange()
+    Viewport transform:
+    - programmed with: Viewport()+DepthRange()
+    - input: NDC coord (vec3)
+    - output: win.coord (x,y) + depth
 
 --xx--
