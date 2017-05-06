@@ -538,6 +538,7 @@ func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHei
 
 /*
 	camera = includes both the perspective and view transforms
+	(camera: the func parameter)
 
 	obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
 	P*V*T*R*U*S = full transformation
