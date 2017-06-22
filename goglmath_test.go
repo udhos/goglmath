@@ -123,10 +123,38 @@ func BenchmarkData(b *testing.B) {
 	}
 }
 
+func BenchmarkSetNullMatrixItems(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.setNullItems()
+	}
+}
+
+func BenchmarkSetNullMatrixCopy(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.setNullCopy()
+	}
+}
+
 func BenchmarkSetNullMatrix(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {
 		m.SetNull()
+	}
+}
+
+func BenchmarkSetIdentityMatrixItems(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.setIdentityItems()
+	}
+}
+
+func BenchmarkSetIdentityMatrixCopy(b *testing.B) {
+	m := &Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m.setIdentityCopy()
 	}
 }
 
@@ -147,6 +175,20 @@ func BenchmarkIdentity(b *testing.B) {
 	m1 := Matrix4{}
 	for n := 0; n < b.N; n++ {
 		m1.Identity()
+	}
+}
+
+func BenchmarkNullRange(b *testing.B) {
+	m1 := Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m1.nullRange()
+	}
+}
+
+func BenchmarkNullComp(b *testing.B) {
+	m1 := Matrix4{}
+	for n := 0; n < b.N; n++ {
+		m1.nullComp()
 	}
 }
 

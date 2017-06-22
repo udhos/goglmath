@@ -16,8 +16,14 @@ var mat4identity = Matrix4{[16]float32{
 	0, 0, 0, 1,
 }}
 
+var mat4null = Matrix4{}
+
 func NewMatrix4Identity() Matrix4 {
 	return mat4identity // clone -- it's unsafe to return pointer to the original data
+}
+
+func NewMatrix4Null() Matrix4 {
+	return mat4null // clone -- it's unsafe to return pointer to the original data
 }
 
 func (m *Matrix4) Data() []float32 {
@@ -29,6 +35,10 @@ func (m *Matrix4) Identity() bool {
 }
 
 func (m *Matrix4) Null() bool {
+	return m.nullComp()
+}
+
+func (m *Matrix4) nullRange() bool {
 	for _, f := range m.data {
 		if f != 0 {
 			return false
@@ -37,11 +47,19 @@ func (m *Matrix4) Null() bool {
 	return true
 }
 
+func (m *Matrix4) nullComp() bool {
+	return m.data == mat4null.data
+}
+
 func (m *Matrix4) CopyFrom(src *Matrix4) {
 	m.data = src.data
 }
 
 func (m *Matrix4) SetNull() {
+	m.setNullCopy()
+}
+
+func (m *Matrix4) setNullItems() {
 	m.data[0] = 0
 	m.data[1] = 0
 	m.data[2] = 0
@@ -60,7 +78,11 @@ func (m *Matrix4) SetNull() {
 	m.data[15] = 0
 }
 
-func (m *Matrix4) SetIdentity() {
+func (m *Matrix4) setNullCopy() {
+	m.data = mat4null.data
+}
+
+func (m *Matrix4) setIdentityItems() {
 	m.data[0] = 1
 	m.data[1] = 0
 	m.data[2] = 0
@@ -77,6 +99,14 @@ func (m *Matrix4) SetIdentity() {
 	m.data[13] = 0
 	m.data[14] = 0
 	m.data[15] = 1
+}
+
+func (m *Matrix4) setIdentityCopy() {
+	m.data = mat4identity.data
+}
+
+func (m *Matrix4) SetIdentity() {
+	m.setIdentityCopy()
 }
 
 func (m *Matrix4) invert() {
