@@ -1,6 +1,6 @@
-[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/udhos/mustago/blob/master/LICENSE)
-[![GoDoc](https://godoc.org/github.com/udhos/mustago?status.svg)](http://godoc.org/github.com/udhos/mustago)
-[![Go Report Card](https://goreportcard.com/badge/github.com/udhos/mustago)](https://goreportcard.com/report/github.com/udhos/mustago)
+[![license](http://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/udhos/goglmath/blob/master/LICENSE)
+[![GoDoc](https://godoc.org/github.com/udhos/goglmath?status.svg)](http://godoc.org/github.com/udhos/goglmath)
+[![Go Report Card](https://goreportcard.com/badge/github.com/udhos/goglmath)](https://goreportcard.com/report/github.com/udhos/goglmath)
 
 # goglmath
 goglmath - Lightweight pure Go 3D math package providing essential matrix/vector operations for GL graphics applications.
