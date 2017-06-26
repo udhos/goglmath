@@ -198,3 +198,21 @@ func BenchmarkNull(b *testing.B) {
 		m1.Null()
 	}
 }
+
+func BenchmarkViewportTransform1(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		viewportTransform1(10, 10, 100, 100, .1, .9, 1.0, 2.0, 3.0)
+	}
+}
+
+func BenchmarkViewportTransform2(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		viewportTransform2(10, 10, 100, 100, .1, .9, 1.0, 2.0, 3.0)
+	}
+}
+
+func BenchmarkViewportTransform(b *testing.B) {
+	for n := 0; n < b.N; n++ {
+		ViewportTransform(10, 10, 100, 100, .1, .9, 1.0, 2.0, 3.0)
+	}
+}

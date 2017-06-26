@@ -11,7 +11,7 @@ Full Transformation Stack
     obj.coord. -> P*V*T*R*U*S*o -> clip coord  -> divide by w -> NDC coord -> viewport transform      -> win.coord+depth
                     ---------      -----------                   ---------    -----------------------    ---------------
                     "MV"           gl_Position                   vec3         Viewport()+DepthRange()    x,y,depth
-                                   vec4
+                                   vec4                          -1..1
 
     o           = obj.coord
     P*V*T*R*U*S = full transformation matrix
@@ -30,6 +30,7 @@ Full Transformation Stack
     gl_Position = clip coord
 
     Viewport transform:
+    - After clipping and division by w, NDC coordinates range from -1 to 1
     - programmed with: Viewport()+DepthRange()
     - input: NDC coord (vec3)
     - output: win.coord (x,y) + depth

@@ -599,11 +599,25 @@ func PickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeigh
 	Output: x,y,depth (x,y = viewport coord)
 */
 func ViewportTransform(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
+	return viewportTransform2(viewportX, viewportWidth, viewportY, viewportHeight, depthNear, depthFar, ndcX, ndcY, ndcZ)
+}
+
+func viewportTransform1(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
 	halfWidth := float64(viewportWidth) / 2.0
 	halfHeight := float64(viewportHeight) / 2.0
 	vx := roundToInt(ndcX*halfWidth+halfWidth) + viewportX
 	vy := roundToInt(ndcY*halfHeight+halfHeight) + viewportY
 	depth := (ndcZ*(depthFar-depthNear) + (depthFar + depthNear)) / 2.0
+
+	return vx, viewportHeight - vy, depth
+}
+
+func viewportTransform2(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
+	halfWidth := .5 * float64(viewportWidth)
+	halfHeight := .5 * float64(viewportHeight)
+	vx := roundToInt(ndcX*halfWidth+halfWidth) + viewportX
+	vy := roundToInt(ndcY*halfHeight+halfHeight) + viewportY
+	depth := .5 * (ndcZ*(depthFar-depthNear) + (depthFar + depthNear))
 
 	return vx, viewportHeight - vy, depth
 }
