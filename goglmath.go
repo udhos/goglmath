@@ -635,3 +635,25 @@ func round(a float64) float64 {
 func roundToInt(a float64) int {
 	return int(round(a))
 }
+
+func SetOrthoMatrix(orthoMatrix *Matrix4, left, right, bottom, top, near, far float64) {
+	lr := 1 / (left - right)
+	bt := 1 / (bottom - top)
+	nf := 1 / (near - far)
+	orthoMatrix.data[0] = float32(-2 * lr)
+	orthoMatrix.data[1] = 0
+	orthoMatrix.data[2] = 0
+	orthoMatrix.data[3] = 0
+	orthoMatrix.data[4] = 0
+	orthoMatrix.data[5] = float32(-2 * bt)
+	orthoMatrix.data[6] = 0
+	orthoMatrix.data[7] = 0
+	orthoMatrix.data[8] = 0
+	orthoMatrix.data[9] = 0
+	orthoMatrix.data[10] = float32(2 * nf)
+	orthoMatrix.data[11] = 0
+	orthoMatrix.data[12] = float32((left + right) * lr)
+	orthoMatrix.data[13] = float32((top + bottom) * bt)
+	orthoMatrix.data[14] = float32((far + near) * nf)
+	orthoMatrix.data[15] = 1
+}
