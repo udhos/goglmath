@@ -656,6 +656,15 @@ func roundToInt(a float64) int {
 	return int(round(a))
 }
 
+/*
+SetOrthoMatrix builds matrix for orthographic projection.
+
+near=-1 far=1 -> flip Z (this is the usual ortho projection)
+near=1 far=-1 -> keep Z
+
+SetOrthoMatrix(m,-1,1,-1,1,-1,1): flip Z (this is the usual ortho projection)
+SetOrthoMatrix(m,-1,1,-1,1,1,-1): identity
+*/
 func SetOrthoMatrix(orthoMatrix *Matrix4, left, right, bottom, top, near, far float64) {
 	lr := 1.0 / (left - right)
 	bt := 1.0 / (bottom - top)
