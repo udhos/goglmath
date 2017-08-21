@@ -115,6 +115,29 @@ func TestNull3(t *testing.T) {
 	}
 }
 
+func TestOrthoMatrix(t *testing.T) {
+	var O Matrix4
+	SetOrthoMatrix(&O, -1, 1, -1, 1, 1, -1)
+	I := NewMatrix4Identity()
+	if !Matrix4Equal(&O, &I) {
+		t.Errorf("mismatch: ortho=%v identity=%v", O, I)
+	}
+}
+
+func BenchmarkMatrix4Equal(b *testing.B) {
+	m := NewMatrix4Identity()
+	for n := 0; n < b.N; n++ {
+		Matrix4Equal(&m, &m)
+	}
+}
+
+func BenchmarkMatrix4Equal2(b *testing.B) {
+	m := NewMatrix4Identity()
+	for n := 0; n < b.N; n++ {
+		Matrix4Equal2(&m, &m)
+	}
+}
+
 func BenchmarkData(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {

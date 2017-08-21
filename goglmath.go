@@ -3,6 +3,7 @@ package goglmath
 import (
 	"errors"
 	"math"
+	"reflect"
 )
 
 type Matrix4 struct {
@@ -30,8 +31,22 @@ func (m *Matrix4) Data() []float32 {
 	return m.data[:]
 }
 
+func Matrix4Equal(m1, m2 *Matrix4) bool {
+	for i, v := range m1.data {
+		if v != m2.data[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func Matrix4Equal2(m1, m2 *Matrix4) bool {
+	return reflect.DeepEqual(m1.data, m2.data)
+}
+
 func (m *Matrix4) Identity() bool {
-	return m.data == mat4identity.data
+	//return m.data == mat4identity.data
+	return Matrix4Equal(m, &mat4identity)
 }
 
 func (m *Matrix4) Null() bool {
@@ -48,7 +63,8 @@ func (m *Matrix4) nullRange() bool {
 }
 
 func (m *Matrix4) nullComp() bool {
-	return m.data == mat4null.data
+	//return m.data == mat4null.data
+	return Matrix4Equal(m, &mat4null)
 }
 
 func (m *Matrix4) CopyFrom(src *Matrix4) {
@@ -637,20 +653,20 @@ func roundToInt(a float64) int {
 }
 
 func SetOrthoMatrix(orthoMatrix *Matrix4, left, right, bottom, top, near, far float64) {
-	lr := 1 / (left - right)
-	bt := 1 / (bottom - top)
-	nf := 1 / (near - far)
-	orthoMatrix.data[0] = float32(-2 * lr)
+	lr := 1.0 / (left - right)
+	bt := 1.0 / (bottom - top)
+	nf := 1.0 / (near - far)
+	orthoMatrix.data[0] = float32(-2.0 * lr)
 	orthoMatrix.data[1] = 0
 	orthoMatrix.data[2] = 0
 	orthoMatrix.data[3] = 0
 	orthoMatrix.data[4] = 0
-	orthoMatrix.data[5] = float32(-2 * bt)
+	orthoMatrix.data[5] = float32(-2.0 * bt)
 	orthoMatrix.data[6] = 0
 	orthoMatrix.data[7] = 0
 	orthoMatrix.data[8] = 0
 	orthoMatrix.data[9] = 0
-	orthoMatrix.data[10] = float32(2 * nf)
+	orthoMatrix.data[10] = float32(2.0 * nf)
 	orthoMatrix.data[11] = 0
 	orthoMatrix.data[12] = float32((left + right) * lr)
 	orthoMatrix.data[13] = float32((top + bottom) * bt)
