@@ -124,17 +124,17 @@ func TestOrthoMatrix(t *testing.T) {
 	}
 }
 
-func BenchmarkMatrix4Equal(b *testing.B) {
+func BenchmarkMatrix4Equal1(b *testing.B) {
 	m := NewMatrix4Identity()
 	for n := 0; n < b.N; n++ {
-		Matrix4Equal(&m, &m)
+		matrix4Equal1(&m, &m)
 	}
 }
 
 func BenchmarkMatrix4Equal2(b *testing.B) {
 	m := NewMatrix4Identity()
 	for n := 0; n < b.N; n++ {
-		Matrix4Equal2(&m, &m)
+		matrix4Equal2(&m, &m)
 	}
 }
 

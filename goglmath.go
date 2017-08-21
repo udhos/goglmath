@@ -32,6 +32,10 @@ func (m *Matrix4) Data() []float32 {
 }
 
 func Matrix4Equal(m1, m2 *Matrix4) bool {
+	return matrix4Equal1(m1, m2)
+}
+
+func matrix4Equal1(m1, m2 *Matrix4) bool {
 	for i, v := range m1.data {
 		if v != m2.data[i] {
 			return false
@@ -40,7 +44,7 @@ func Matrix4Equal(m1, m2 *Matrix4) bool {
 	return true
 }
 
-func Matrix4Equal2(m1, m2 *Matrix4) bool {
+func matrix4Equal2(m1, m2 *Matrix4) bool {
 	return reflect.DeepEqual(m1.data, m2.data)
 }
 
