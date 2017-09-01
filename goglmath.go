@@ -191,7 +191,7 @@ func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
 	return nil
 }
 
-// transform: multiply this matrix [m] by vector [x,y,z,w]
+// Transform multiples this matrix [m] by vector [x,y,z,w]
 func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 	m0 := float64(m.data[0])
 	m1 := float64(m.data[1])
@@ -216,6 +216,18 @@ func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 	tw = m3*x + m7*y + m11*z + m15*w
 
 	return
+}
+
+// Rotate multiplies the matrix m by a rotation matrix built from specified forward and up vectors.
+// This rotation will rotate a point from the "null rotation" direction to the direction specified by forward and up vectors.
+// null rotation:
+// forward = 0 0 -1 // looking towards -Z
+// up = 0 1 0       // up direction is +Y
+
+func (m *Matrix4) Rotate(forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
+	var rotate Matrix4
+	SetRotationMatrix(&rotate, forwardX, forwardY, forwardZ, upX, upY, upZ)
+	m.Multiply(&rotate)
 }
 
 // usually set w to 1.0

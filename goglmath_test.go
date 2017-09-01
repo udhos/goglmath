@@ -124,6 +124,17 @@ func TestOrthoMatrix(t *testing.T) {
 	}
 }
 
+// forward = 0 0 -1 // looking towards -Z
+// up = 0 1 0       // up direction is +Y
+func TestRotate(t *testing.T) {
+	M := NewMatrix4Identity()
+	M.Rotate(0, 0, -1, 0, -1, 0) // turn upside down (180 around Z)
+	px, py, pz, pw := M.Transform(0, 1, 0, 1)
+	if px != 0 || py != -1 || pz != 0 || pw != 1 {
+		t.Errorf("unexpected point location: %f,%f,%f,%f", px, py, pz, pw)
+	}
+}
+
 func BenchmarkMatrix4Equal1(b *testing.B) {
 	m := NewMatrix4Identity()
 	for n := 0; n < b.N; n++ {
