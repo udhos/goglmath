@@ -139,11 +139,11 @@ func (m *Matrix4) SetIdentity() {
 	m.setIdentityCopy()
 }
 
-func (m *Matrix4) invert() {
-	m.copyInverseFrom(m)
+func (m *Matrix4) Invert() error {
+	return m.CopyInverseFrom(m)
 }
 
-func (m *Matrix4) copyInverseFrom(src *Matrix4) error {
+func (m *Matrix4) CopyInverseFrom(src *Matrix4) error {
 	a00 := src.data[0]
 	a01 := src.data[1]
 	a02 := src.data[2]
@@ -593,7 +593,7 @@ func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHei
 
 	// invertedCamera: clip coord -> undo perspective -> undo view -> world coord
 	var invertedCamera Matrix4
-	invertedCamera.copyInverseFrom(camera)
+	invertedCamera.CopyInverseFrom(camera)
 	vx, vy, vz, vw := invertedCamera.Transform(pX, pY, pZ, 1.0)
 	if vw == 0.0 {
 		err = errors.New("unproject: unprojected pick point with W=0")
