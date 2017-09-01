@@ -168,6 +168,13 @@ func BenchmarkMatrix4Equal2(b *testing.B) {
 	}
 }
 
+func BenchmarkMatrix4Equal3(b *testing.B) {
+	m := NewMatrix4Identity()
+	for n := 0; n < b.N; n++ {
+		matrix4Equal3(&m, &m)
+	}
+}
+
 func BenchmarkData(b *testing.B) {
 	m := &Matrix4{}
 	for n := 0; n < b.N; n++ {

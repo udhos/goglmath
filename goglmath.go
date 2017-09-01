@@ -32,7 +32,7 @@ func (m *Matrix4) Data() []float32 {
 }
 
 func Matrix4Equal(m1, m2 *Matrix4) bool {
-	return matrix4Equal1(m1, m2)
+	return matrix4Equal3(m1, m2)
 }
 
 func matrix4Equal1(m1, m2 *Matrix4) bool {
@@ -48,9 +48,15 @@ func matrix4Equal2(m1, m2 *Matrix4) bool {
 	return reflect.DeepEqual(m1.data, m2.data)
 }
 
+func matrix4Equal3(m1, m2 *Matrix4) bool {
+	// Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.
+	return m1.data == m2.data
+}
+
 func (m *Matrix4) Identity() bool {
-	//return m.data == mat4identity.data
-	return Matrix4Equal(m, &mat4identity)
+	// Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.
+	return m.data == mat4identity.data
+	//return Matrix4Equal(m, &mat4identity)
 }
 
 func (m *Matrix4) Null() bool {
@@ -67,11 +73,13 @@ func (m *Matrix4) nullRange() bool {
 }
 
 func (m *Matrix4) nullComp() bool {
-	//return m.data == mat4null.data
-	return Matrix4Equal(m, &mat4null)
+	// Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.
+	return m.data == mat4null.data
+	//return Matrix4Equal(m, &mat4null)
 }
 
 func (m *Matrix4) CopyFrom(src *Matrix4) {
+	// Go's arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents.
 	m.data = src.data
 }
 
@@ -99,6 +107,7 @@ func (m *Matrix4) setNullItems() {
 }
 
 func (m *Matrix4) setNullCopy() {
+	// Go's arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents.
 	m.data = mat4null.data
 }
 
@@ -122,6 +131,7 @@ func (m *Matrix4) setIdentityItems() {
 }
 
 func (m *Matrix4) setIdentityCopy() {
+	// Go's arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents.
 	m.data = mat4identity.data
 }
 
