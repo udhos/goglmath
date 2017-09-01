@@ -223,7 +223,6 @@ func (m *Matrix4) Transform(x, y, z, w float64) (tx, ty, tz, tw float64) {
 // null rotation:
 // forward = 0 0 -1 // looking towards -Z
 // up = 0 1 0       // up direction is +Y
-
 func (m *Matrix4) Rotate(forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
 	var rotate Matrix4
 	SetRotationMatrix(&rotate, forwardX, forwardY, forwardZ, upX, upY, upZ)
