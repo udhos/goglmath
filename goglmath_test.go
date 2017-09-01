@@ -78,6 +78,25 @@ func TestIdentity5(t *testing.T) {
 	}
 }
 
+func TestIdentity6(t *testing.T) {
+	var m1, m2 Matrix4
+	m1.SetIdentity()
+	m2.SetIdentity()
+	if !Matrix4Equal(&m1, &m2) {
+		t.Errorf("mismatch: %v != %v", m1, m2)
+	}
+	m2.SetNull()
+	if !m1.Identity() {
+		t.Errorf("not identity: %v", m1)
+	}
+	if !m2.Null() {
+		t.Errorf("not null: %v", m2)
+	}
+	if Matrix4Equal(&m1, &m2) {
+		t.Errorf("unexpected match: %v == %v", m1, m2)
+	}
+}
+
 func TestNull1(t *testing.T) {
 	m1 := &Matrix4{}
 	if !m1.Null() {
