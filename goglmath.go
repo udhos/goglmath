@@ -6,6 +6,7 @@ import (
 	"reflect"
 )
 
+// Matrix4 is a 4x4 matrix.
 type Matrix4 struct {
 	data [16]float32
 }
@@ -19,18 +20,22 @@ var mat4identity = Matrix4{[16]float32{
 
 var mat4null = Matrix4{}
 
+// NewMatrix4Identity creates an identity matrix.
 func NewMatrix4Identity() Matrix4 {
 	return mat4identity // clone -- it's unsafe to return pointer to the original data
 }
 
+// NewMatrix4Null creates a null matrix.
 func NewMatrix4Null() Matrix4 {
 	return mat4null // clone -- it's unsafe to return pointer to the original data
 }
 
+// Data returns matrix data as slice ready to GPU upload.
 func (m *Matrix4) Data() []float32 {
 	return m.data[:]
 }
 
+// Matrix4Equal tests matrices for equality.
 func Matrix4Equal(m1, m2 *Matrix4) bool {
 	return matrix4Equal3(m1, m2)
 }
@@ -53,12 +58,14 @@ func matrix4Equal3(m1, m2 *Matrix4) bool {
 	return m1.data == m2.data
 }
 
+// Identity reports if matrix is identity.
 func (m *Matrix4) Identity() bool {
 	// Array values are comparable if values of the array element type are comparable. Two array values are equal if their corresponding elements are equal.
 	return m.data == mat4identity.data
 	//return Matrix4Equal(m, &mat4identity)
 }
 
+// Null reports if matrix is null.
 func (m *Matrix4) Null() bool {
 	return m.nullComp()
 }
@@ -78,11 +85,13 @@ func (m *Matrix4) nullComp() bool {
 	//return Matrix4Equal(m, &mat4null)
 }
 
+// CopyFrom copy matrix data from another source matrix.
 func (m *Matrix4) CopyFrom(src *Matrix4) {
 	// Go's arrays are values. An array variable denotes the entire array; it is not a pointer to the first array element (as would be the case in C). This means that when you assign or pass around an array value you will make a copy of its contents.
 	m.data = src.data
 }
 
+// SetNull sets matrix to null.
 func (m *Matrix4) SetNull() {
 	m.setNullCopy()
 }
@@ -135,14 +144,17 @@ func (m *Matrix4) setIdentityCopy() {
 	m.data = mat4identity.data
 }
 
+// SetIdentity sets matrix to identity.
 func (m *Matrix4) SetIdentity() {
 	m.setIdentityCopy()
 }
 
+// Invert inverts the matrix.
 func (m *Matrix4) Invert() error {
 	return m.CopyInverseFrom(m)
 }
 
+// CopyInverseFrom sets the matrix as inverse of another source matrix.
 func (m *Matrix4) CopyInverseFrom(src *Matrix4) error {
 	a00 := src.data[0]
 	a01 := src.data[1]
@@ -239,6 +251,7 @@ func (m *Matrix4) Rotate(forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
 	m.Multiply(&rotate)
 }
 
+// Translate multiples the matrix by a translation matrix.
 // usually set w to 1.0
 func (m *Matrix4) Translate(tx, ty, tz, tw float64) {
 	x := float32(tx)
@@ -255,6 +268,7 @@ func (m *Matrix4) Translate(tx, ty, tz, tw float64) {
 	m.data[15] = t4
 }
 
+// Scale multiplies the matrix by a scaling matrix.
 // usually set w to 1.0
 func (m *Matrix4) Scale(x, y, z, w float64) {
 	x1 := float32(x)
@@ -283,6 +297,7 @@ func (m *Matrix4) Scale(x, y, z, w float64) {
 	m.data[15] *= w1
 }
 
+// Multiply multiplies the matrix by another matrix.
 func (m *Matrix4) Multiply(n *Matrix4) {
 	m00 := m.data[0]
 	m01 := m.data[4]
@@ -336,14 +351,17 @@ func (m *Matrix4) Multiply(n *Matrix4) {
 	m.data[15] = (m30 * n03) + (m31 * n13) + (m32 * n23) + (m33 * n33)
 }
 
+// DistanceSquared3 calculates the squared of the distance between two points.
 func DistanceSquared3(x1, y1, z1, x2, y2, z2 float64) float64 {
 	return LengthSquared3(x2-x1, y2-y1, z2-z1)
 }
 
+// Distance3 calculates the distance between two points.
 func Distance3(x1, y1, z1, x2, y2, z2 float64) float64 {
 	return Length3(x2-x1, y2-y1, z2-z1)
 }
 
+// Ortho3 reports if two vectors are orthogonal.
 func Ortho3(x1, y1, z1, x2, y2, z2 float64) bool {
 	return closeToZero(Dot3(x1, y1, z1, x2, y2, z2))
 }
@@ -352,22 +370,27 @@ func closeToZero(f float64) bool {
 	return math.Abs(f-0.0) < 0.000001
 }
 
+// Cross3 calculates the cross (vector) product of two vectors.
 func Cross3(x1, y1, z1, x2, y2, z2 float64) (float64, float64, float64) {
 	return y1*z2 - z1*y2, z1*x2 - x1*z2, x1*y2 - y1*x2
 }
 
+// Dot3 calculates the dot (scalar) product of two vectors.
 func Dot3(x1, y1, z1, x2, y2, z2 float64) float64 {
 	return x1*x2 + y1*y2 + z1*z2
 }
 
+// LengthSquared3 calculates the squared length of a vector.
 func LengthSquared3(x, y, z float64) float64 {
 	return x*x + y*y + z*z // dot3(x,y,z,x,y,z)
 }
 
+// Length3 calculates the length of a vector.
 func Length3(x, y, z float64) float64 {
 	return math.Sqrt(LengthSquared3(x, y, z))
 }
 
+// Normalize3 calculates a normalized copy of a vector.
 func Normalize3(x, y, z float64) (float64, float64, float64) {
 	length := Length3(x, y, z)
 	if length == 0 {
@@ -376,39 +399,39 @@ func Normalize3(x, y, z float64) (float64, float64, float64) {
 	return x / length, y / length, z / length
 }
 
-/*
-	null rotation:
-	forward = 0 0 -1 // looking towards -Z
-	up = 0 1 0       // up direction is +Y
-	setRotationMatrix(&rotation, 0, 0, -1, 0, 1, 0)
-*/
+// SetRotationMatrix builds the rotation matrix.
+// The rotation matrix will rotate a point from the null rotation direction to the direction specified by the given forward and up vectors.
+//
+// Null rotation vectors are:
+// forward = 0 0 -1 // looking towards -Z
+// up = 0 1 0       // up direction is +Y
+// SetRotationMatrix(&rotation, 0, 0, -1, 0, 1, 0)
 func SetRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ float64) {
 	SetModelMatrix(rotationMatrix, forwardX, forwardY, forwardZ, upX, upY, upZ, 0, 0, 0)
 }
 
-/*
-	setModelMatrix builds the model matrix.
-	Model transformation represents objection location/orientation in world space.
-	Model transformation is also known as "camera" transformation.
-	Model transformation is the inverse of the view transformation.
-	Common use is to compute object location/orientation into full transformation matrix.
-
-	obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
-	P*V*T*R*U*S = full transformation
-	P = Perspective
-	V = View (inverse of camera) built by setViewMatrix
-	T*R = model transformation built by THIS setModelMatrix
-	T = Translation
-	R = Rotation
-	U = Undo Model Local Rotation
-	S = Scaling
-
-	null model:
-	forward = 0 0 -1    // looking towards -Z
-	up = 0 1 0          // up direction is +Y
-	translation = 0 0 0 // position at origin
-	setModelMatrix(&rotation, 0, 0, -1, 0, 1, 0, 0, 0, 0)
-*/
+//
+// SetModelMatrix builds the model matrix.
+// Model transformation represents objection location/orientation in world space.
+// Model transformation is also known as "camera" transformation.
+// Model transformation is the inverse of the view transformation.
+// Common use is to compute object location/orientation into full transformation matrix.
+//
+// obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
+// P*V*T*R*U*S = full transformation
+// P = Perspective
+// V = View (inverse of camera) built by setViewMatrix
+// T*R = model transformation built by THIS setModelMatrix
+// T = Translation
+// R = Rotation
+// U = Undo Model Local Rotation
+// S = Scaling
+//
+// null model:
+// forward = 0 0 -1    // looking towards -Z
+// up = 0 1 0          // up direction is +Y
+// translation = 0 0 0 // position at origin
+// setModelMatrix(&rotation, 0, 0, -1, 0, 1, 0, 0, 0, 0)
 func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY, upZ, tX, tY, tZ float64) {
 	rightX, rightY, rightZ := Normalize3(Cross3(forwardX, forwardY, forwardZ, upX, upY, upZ))
 
@@ -428,14 +451,6 @@ func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 	oY := float32(tY)
 	oZ := float32(tZ)
 
-	/*
-		modelMatrix.data = []float32{
-			rX, rY, rZ, 0, // c0
-			uX, uY, uZ, 0, // c1
-			bX, bY, bZ, 0, // c2
-			oX, oY, oZ, 1, // c3
-		}
-	*/
 	modelMatrix.data[0] = rX
 	modelMatrix.data[1] = rY
 	modelMatrix.data[2] = rZ
@@ -454,30 +469,28 @@ func SetModelMatrix(modelMatrix *Matrix4, forwardX, forwardY, forwardZ, upX, upY
 	modelMatrix.data[15] = 1
 }
 
-/*
-	setViewMatrix builds the view matrix.
-	View transformation represents camera inverted location/orientation in world space.
-	View transformation moves all world objects in order to simulate a camera.
-	View transformation is also known as "lookAt" transformation.
-	View transformation is the inverse of the model transformation.
-	Common use is to compute camera location/orientation into full transformation matrix.
-
-	obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
-	P*V*T*R*U*S = full transformation
-	P = Perspective
-	V = View (inverse of camera) built by THIS setViewMatrix
-	T*R = model transformation built by setModelMatrix
-	T = Translation
-	R = Rotation
-	U = Undo Model Local Rotation
-	S = Scaling
-
-	null view matrix:
-	focus = 0 0 -1
-	up    = 0 1 0
-	pos   = 0 0 0
-	setViewMatrix(&V, 0, 0, -1, 0, 1, 0, 0, 0, 0)
-*/
+// SetViewMatrix builds the view matrix.
+// View transformation represents camera inverted location/orientation in world space.
+// View transformation moves all world objects in order to simulate a camera.
+// View transformation is also known as "lookAt" transformation.
+// View transformation is the inverse of the model transformation.
+// Common use is to compute camera location/orientation into full transformation matrix.
+//
+// obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
+// P*V*T*R*U*S = full transformation
+// P = Perspective
+// V = View (inverse of camera) built by THIS setViewMatrix
+// T*R = model transformation built by setModelMatrix
+// T = Translation
+// R = Rotation
+// U = Undo Model Local Rotation
+// S = Scaling
+//
+// null view matrix:
+// focus = 0 0 -1
+// up    = 0 1 0
+// pos   = 0 0 0
+// setViewMatrix(&V, 0, 0, -1, 0, 1, 0, 0, 0, 0)
 func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, posX, posY, posZ float64) {
 
 	backX, backY, backZ := Normalize3(posX-focusX, posY-focusY, posZ-focusZ)
@@ -504,14 +517,6 @@ func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, p
 	eY := float32(rotatedEyeY)
 	eZ := float32(rotatedEyeZ)
 
-	/*
-		viewMatrix.data = []float32{
-			rX, uX, bX, 0, // c0
-			rY, uY, bY, 0, // c1
-			rZ, uZ, bZ, 0, // c2
-			eX, eY, eZ, 1, // c3
-		}
-	*/
 	viewMatrix.data[0] = rX
 	viewMatrix.data[1] = uX
 	viewMatrix.data[2] = bX
@@ -530,6 +535,7 @@ func SetViewMatrix(viewMatrix *Matrix4, focusX, focusY, focusZ, upX, upY, upZ, p
 	viewMatrix.data[15] = 1
 }
 
+// SetPerspectiveMatrix builds the perspective projection matrix.
 func SetPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspectRatio, zNear, zFar float64) {
 
 	f := math.Tan(math.Pi*0.5 - fieldOfViewYRadians*0.5) // = cotan(fieldOfViewYRadians/2)
@@ -540,14 +546,6 @@ func SetPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspec
 	d10 := float32((zNear + zFar) * rangeInv)
 	d14 := float32(zNear * zFar * rangeInv * 2.0)
 
-	/*
-		perspectiveMatrix.data = []float32{
-			d0, 0, 0, 0,
-			0, d5, 0, 0,
-			0, 0, d10, -1,
-			0, 0, d14, 0,
-		}
-	*/
 	perspectiveMatrix.data[0] = d0
 	perspectiveMatrix.data[1] = 0
 	perspectiveMatrix.data[2] = 0
@@ -607,20 +605,20 @@ func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHei
 	return
 }
 
-/*
-	camera = includes both the perspective and view transforms
-	(camera: the func parameter)
-
-	obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
-	P*V*T*R*U*S = full transformation
-	P = Perspective
-	V = View (inverse of camera) built by setViewMatrix
-	T*R = model transformation built by setModelMatrix
-	T = Translation
-	R = Rotation
-	U = Undo Model Local Rotation
-	S = Scaling
-*/
+// PickRay calculates points where pickX,pickY intersects near and far planes.
+//
+// camera = includes both the perspective and view transforms
+// (camera: the func parameter)
+//
+// obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
+// P*V*T*R*U*S = full transformation
+// P = Perspective
+// V = View (inverse of camera) built by setViewMatrix
+// T*R = model transformation built by setModelMatrix
+// T = Translation
+// R = Rotation
+// U = Undo Model Local Rotation
+// S = Scaling
 func PickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeight, pickX, pickY int) (nearX, nearY, nearZ, farX, farY, farZ float64, err error) {
 
 	nearX, nearY, nearZ, err = unproject(camera, viewportX, viewportWidth, viewportY, viewportHeight, pickX, viewportHeight-pickY, 0.0)
@@ -633,12 +631,11 @@ func PickRay(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeigh
 	return
 }
 
-/*
-	viewportTransform: map NDC coordinates to viewport coordinates
-	Input: viewport (viewportX, viewportWidth, viewportY, viewportHeight)
-	Input: depthRange (depthNear, depthFar)
-	Output: x,y,depth (x,y = viewport coord)
-*/
+// ViewportTransform simulates the viewport transform.
+// ViewportTransform maps NDC coordinates to viewport coordinates.
+// Input: viewport (viewportX, viewportWidth, viewportY, viewportHeight)
+// Input: depthRange (depthNear, depthFar)
+// Output: x,y,depth (x,y = viewport coord)
 func ViewportTransform(viewportX, viewportWidth, viewportY, viewportHeight int, depthNear, depthFar, ndcX, ndcY, ndcZ float64) (int, int, float64) {
 	return viewportTransform2(viewportX, viewportWidth, viewportY, viewportHeight, depthNear, depthFar, ndcX, ndcY, ndcZ)
 }
