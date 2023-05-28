@@ -1,3 +1,4 @@
+// Package goglmath is a lightweight pure Go 3D math package providing essential matrix/vector operations for GL graphics applications.
 package goglmath
 
 import (
@@ -410,7 +411,6 @@ func SetRotationMatrix(rotationMatrix *Matrix4, forwardX, forwardY, forwardZ, up
 	SetModelMatrix(rotationMatrix, forwardX, forwardY, forwardZ, upX, upY, upZ, 0, 0, 0)
 }
 
-//
 // SetModelMatrix builds the model matrix.
 // Model transformation represents objection location/orientation in world space.
 // Model transformation is also known as "camera" transformation.
@@ -565,17 +565,17 @@ func SetPerspectiveMatrix(perspectiveMatrix *Matrix4, fieldOfViewYRadians, aspec
 }
 
 /*
-	camera = includes both the perspective and view transforms
+camera = includes both the perspective and view transforms
 
-	obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
-	P*V*T*R*U*S = full transformation
-	P = Perspective
-	V = View (inverse of camera) built by setViewMatrix
-	T*R = model transformation built by setModelMatrix
-	T = Translation
-	R = Rotation
-	U = Undo Model Local Rotation
-	S = Scaling
+obj.coord. -> P*V*T*R*U*S -> clip coord -> divide by w -> NDC coord -> viewport transform -> window coord
+P*V*T*R*U*S = full transformation
+P = Perspective
+V = View (inverse of camera) built by setViewMatrix
+T*R = model transformation built by setModelMatrix
+T = Translation
+R = Rotation
+U = Undo Model Local Rotation
+S = Scaling
 */
 func unproject(camera *Matrix4, viewportX, viewportWidth, viewportY, viewportHeight, pickX, pickY int, depth float64) (worldX, worldY, worldZ float64, err error) {
 

@@ -1,33 +1,25 @@
 #!/bin/bash
 
-me=`basename $0`
-msg() {
-    echo >&2 $me: $*
-}
+go install golang.org/x/vuln/cmd/govulncheck@latest
 
-msg fmt
-gofmt -s -w *.go
+gofmt -s -w .
 
-msg fix
-go tool fix *.go
+revive ./...
 
-msg vet
-go tool vet .
+#gocyclo -over 15 .
 
-msg install
-go install
+go mod tidy
 
-msg gosimple
-hash gosimple 2>/dev/null && gosimple *.go
+govulncheck ./...
 
-msg golint
-hash golint 2>/dev/null && golint *.go
+go env -w CGO_ENABLED=1
 
-msg staticcheck
-hash staticcheck 2>/dev/null && staticcheck *.go
+go test -race ./...
 
-msg test
-go test
+go test -race -bench=. ./...
 
-msg bench
-go test -bench=.
+go env -w CGO_ENABLED=0
+
+go install ./...
+
+go env -u CGO_ENABLED
